@@ -333,13 +333,6 @@ def collect_metadata_for_model_upload(
             bias_scaled_tar=model_tar_dir / 'bias_model_scaled.tar')
         )
 
-        # check that all model paths exist
-        for path in model_paths[fold]:
-            if 'tar' in str(path):
-                assert path.is_dir(), f"{path} does not exist"
-            else:
-                assert path.is_file(), f"{path} does not exist"
-
         # then logs
         if chrombpnet_no_bias_h5.stem == 'chrombpnet_wo_bias':
             logs_dir = chrombpnet_no_bias_h5.parent
@@ -357,10 +350,6 @@ def collect_metadata_for_model_upload(
         )
         )
 
-        # check that all log paths exist
-        for path in log_paths[fold]:
-            assert path.is_file(), f"{path} does not exist"
-
         # then train/test/val regions
         train_test_val_cur_fold = train_test_val_parent / f"{experiment}/train_test_val/fold_{fold}"
         train_test_val_paths.append(TrainTestValPaths(
@@ -373,10 +362,6 @@ def collect_metadata_for_model_upload(
             nonpeaks_testset=train_test_val_cur_fold / 'nonpeaks/regions_test.bed.gz',
         )
         )
-
-        # check that train/test/val paths exist
-        for path in train_test_val_paths[fold]:
-            assert path.is_file(), f"{path} does not exist"
 
     # finally: call function to create model json
     construct_model_upload_json(
@@ -416,17 +401,16 @@ if __name__ == '__main__':
     parser.add_argument("--path_to_splits", type=Path)
     args = parser.parse_args()
 
-    if args.json_type == 'chrombpnet-retrained-model':
-        collect_metadata_for_model_upload(
-            experiment=args.experiment,
-            assay=args.assay,
-            metadata_in=args.metadata_in,
-            bam_to_experiment_in=args.bam_to_expt,
-            model_tar_parent=args.model_tar_parent,
-            train_test_val_parent=args.train_test_val_parent,
-            path_to_splits=args.path_to_splits,
-            models_readme_in=args.models_readme_in,
-            train_test_val_readme_in=args.train_test_val_readme_in,
-            json_outfile=args.json_outfile,
-            metadata_sep=args.metadata_sep
-        )
+    collect_metadata_for_model_upload(
+        experiment=args.experiment,
+        assay=args.assay,
+        metadata_in=args.metadata_in,
+        bam_to_experiment_in=args.bam_to_expt,
+        model_tar_parent=args.model_tar_parent,
+        train_test_val_parent=args.train_test_val_parent,
+        path_to_splits=args.path_to_splits,
+        models_readme_in=args.models_readme_in,
+        train_test_val_readme_in=args.train_test_val_readme_in,
+        json_outfile=args.json_outfile,
+        metadata_sep=args.metadata_sep
+    )
